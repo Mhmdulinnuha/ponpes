@@ -24,3 +24,99 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.navbar-actions{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.search-input{
+  height:64px;
+  border-radius:18px;
+}
+
+.profile-button{
+  display:flex;
+  align-items:center;
+  gap:14px;
+
+  padding:12px 18px;
+
+  border:1px solid #dfe5ef;
+
+  border-radius:18px;
+
+  background:#fff;
+}
+
+.avatar-img{
+  width:44px;
+
+  height:44px;
+
+  border-radius:14px;
+
+  object-fit:cover;
+}
+
+.notification-menu{
+  width:320px;
+  border-radius:16px;
+}
+
+.admin-navbar{
+  min-height:110px;
+}
+
+.monitoring-container{
+    min-height:100vh;
+    background:#f4f7fe;
+    padding:40px;
+}
+
+.dashboard-title{
+    font-weight:700;
+}
+
+.monitor-card{
+    border:none;
+    border-radius:18px;
+    transition:.3s;
+}
+
+.monitor-card:hover{
+    transform:translateY(-6px);
+}
+
+.icon-box{
+    width:70px;
+    height:70px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:16px;
+
+    font-size:30px;
+}
+
+.live-dot{
+    width:10px;
+    height:10px;
+
+    background:#00d26a;
+
+    border-radius:50%;
+
+    animation:blink 1s infinite;
+}
+
+@keyframes blink{
+    50%{
+        opacity:.3;
+    }
+}
