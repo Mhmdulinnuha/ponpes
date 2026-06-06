@@ -94,7 +94,7 @@ export default function JenisPembayaran() {
                   </p>
 
                   <h1 className="h3 mb-1">
-                    Pembayaran
+                    Jenis Pembayaran
                   </h1>
 
                   <p className="text-muted mb-0">

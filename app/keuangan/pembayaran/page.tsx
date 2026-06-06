@@ -1,46 +1,48 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 
 import Sidebar from "@/app/keuangan/components/sidebar"
 import Navbar from "@/app/keuangan/components/navbar"
 import Footer from "@/app/keuangan/components/footer"
 
-const pembayaran = [
-  {
-    id: "TRX-001",
-    nama: "Ustadz Ahmad Hasan",
-    jenis: "Syahriyah",
-    nominal: "Rp 650.000",
-    tanggal: "30 Mei 2026",
-    status: "Lunas",
-    badge: "success",
-    email: "guru1@pondok.id",
-  },
-  {
-    id: "TRX-002",
-    nama: "Ustadzah Siti Aisyah",
-    jenis: "Uang Makan",
-    nominal: "Rp 450.000",
-    tanggal: "29 Mei 2026",
-    status: "Belum Lunas",
-    badge: "warning",
-    email: "guru2@pondok.id",
-  },
-  {
-    id: "TRX-003",
-    nama: "Ustadz Abdul Karim",
-    jenis: "Seragam",
-    nominal: "Rp 350.000",
-    tanggal: "28 Mei 2026",
-    status: "Lunas",
-    badge: "primary",
-    email: "guru3@pondok.id",
-  },
-]
+
 
 export default function Pembayaran() {
     const [selectedData, setSelectedData] = useState<any>(null)
+    const [pembayaran, setPembayaran] = useState<any[]>([])
+        const [loading, setLoading] = useState(true)
+        
+        const getPembayaran = async () => {
+  try {
+    const res = await fetch(
+      "http://localhost:8080/pembayaran"
+    )
+
+    const result = await res.json()
+
+    if (!res.ok) {
+      throw new Error(result.message)
+    }
+
+    setPembayaran(result.data)
+  } catch (err) {
+    console.error(err)
+  } finally {
+    setLoading(false)
+  }
+}
+        
+        useEffect(() => {
+          getPembayaran()
+        }, [])
+        if (loading) {
+          return (
+            <div className="container py-5">
+              Loading Data Pembayaran...
+            </div>
+          )
+        }
   return (
     <div className="admin-shell">
 
@@ -249,121 +251,88 @@ export default function Pembayaran() {
                   </thead>
 
                   <tbody>
+              {pembayaran.map((item) => (
+                <tr key={item.id}>
+                  <td className="fw-semibold text-primary">
+                    {item.id}
+                  </td>
 
-                    {pembayaran.map((item) => (
+                  <td>
+                    <div className="d-flex align-items-center gap-3">
 
-                      <tr key={item.id}>
+                      <Image
+                        src="/images/avatar/avatar.jpg"
+                        alt={item.santri?.nama_lengkap || "Santri"}
+                        width={48}
+                        height={48}
+                        className="rounded-circle border"
+                      />
 
-                        {/* ID */}
+                      <div>
+                        <h6 className="mb-0 fw-semibold">
+                          {item.Santri?.nama_lengkap}
+                        </h6>
 
-                        <td className="fw-semibold text-primary">
-                          {item.id}
-                        </td>
+                       
+                      </div>
 
-                        {/* FOTO + NAMA */}
+                    </div>
+                  </td>
 
-                        <td>
+                  <td>
+                    {item.JenisPembayaran?.nama_jenis}
+                  </td>
 
-                          <div className="d-flex align-items-center gap-3">
+                  <td>
+                    Rp{" "}
+                    {Number(item.nominal).toLocaleString(
+                      "id-ID"
+                    )}
+                  </td>
 
-                            <Image
-                              src="/images/avatar/avatar.jpg"
-                              alt={item.nama}
-                              width={48}
-                              height={48}
-                              className="rounded-circle border"
-                            />
+                  <td>
+                    {new Date(item.tanggal).toLocaleDateString(
+                      "id-ID"
+                    )}
+                  </td>
 
-                            <div>
+                  <td>
+                    <span
+                      className={`badge ${
+                        item.status === "Sudah Lunas"
+                          ? "bg-success"
+                          : "bg-danger"
+                      }`}
+                    >
+                      {item.status}
+                    </span>
+                  </td>
 
-                              <h6 className="mb-0 fw-semibold">
-                                {item.nama}
-                              </h6>
+                  <td className="text-end">
+                    <div className="d-flex justify-content-end gap-2">
 
-                              <small className="text-muted">
-                                {item.email}
-                              </small>
+                      <button
+                        className="btn btn-light btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#detailPembayaranModal"
+                        onClick={() => setSelectedData(item)}
+                      >
+                        <i className="bi bi-eye" />
+                      </button>
 
-                            </div>
+                      <button className="btn btn-primary btn-sm">
+                        <i className="bi bi-pencil-square" />
+                      </button>
 
-                          </div>
+                      <button className="btn btn-danger btn-sm">
+                        <i className="bi bi-trash" />
+                      </button>
 
-                        </td>
-
-                        {/* JENIS */}
-
-                        <td className="text-muted">
-                          {item.jenis}
-                        </td>
-
-                        {/* NOMINAL */}
-
-                        <td>
-
-                          <span className="fw-semibold text-success">
-                            {item.nominal}
-                          </span>
-
-                        </td>
-
-                        {/* TANGGAL */}
-
-                        <td className="text-muted">
-                          {item.tanggal}
-                        </td>
-
-                        {/* STATUS */}
-
-                        <td>
-
-                          <span
-                            className={`badge rounded-pill text-bg-${item.badge}`}
-                          >
-
-                            {item.status}
-
-                          </span>
-
-                        </td>
-
-                        {/* AKSI */}
-
-                        <td className="text-end">
-
-                          <div className="d-flex justify-content-end gap-2">
-
-                            <button
-                              className="btn btn-light btn-sm action-btn rounded-3"
-                              data-bs-toggle="modal"
-                              data-bs-target="#detailPembayaranModal"
-                              onClick={() => setSelectedData(item)}
-                            >
-
-                              <i className="bi bi-eye" />
-
-                            </button>
-
-                            <button className="btn btn-primary btn-sm action-btn rounded-3">
-
-                              <i className="bi bi-pencil-square" />
-
-                            </button>
-
-                            <button className="btn btn-danger btn-sm action-btn rounded-3">
-
-                              <i className="bi bi-trash" />
-
-                            </button>
-
-                          </div>
-
-                        </td>
-
-                      </tr>
-
-                    ))}
-
-                  </tbody>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
 
                 </table>
 
@@ -467,31 +436,28 @@ export default function Pembayaran() {
 
                       <div className="d-flex align-items-center gap-4">
 
-                        <Image
-                          src="/images/avatar/avatar.jpg"
-                          alt={selectedData.nama}
-                          width={90}
-                          height={90}
-                          className="rounded-circle border"
-                        />
+                       <Image
+                    src="/images/avatar/avatar.jpg"
+                    alt={selectedData.santri?.nama_lengkap}
+                    width={90}
+                    height={90}
+                    className="rounded-circle border"
+                  />
 
-                        <div>
+                  <h4 className="fw-bold mb-1">
+                    {selectedData.santri?.nama_lengkap}
+                  </h4>
 
-                          <h4 className="fw-bold mb-1">
-                            {selectedData.nama}
-                          </h4>
 
-                          <p className="text-muted mb-2">
-                            {selectedData.email}
-                          </p>
-
-                          <span
-                            className={`badge text-bg-${selectedData.badge}`}
-                          >
-                            {selectedData.status}
-                          </span>
-
-                        </div>
+                  <span
+                    className={`badge ${
+                      selectedData.status === "Lunas"
+                        ? "bg-success"
+                        : "bg-danger"
+                    }`}
+                  >
+                    {selectedData.status}
+                  </span>
 
                       </div>
 
@@ -531,36 +497,65 @@ export default function Pembayaran() {
                           </thead>
 
                           <tbody>
+                      {pembayaran.map((item) => (
+                        <tr key={item.id}>
+                          <td>{item.id}</td>
 
-                            <tr>
+                          <td>
+                            {item.santri?.nama_lengkap}
+                          </td>
 
-                              <td>
-                                {selectedData.jenis}
-                              </td>
+                          <td>
+                            {item.jenis_pembayaran?.nama_jenis}
+                          </td>
 
-                              <td>
-                                {selectedData.tanggal}
-                              </td>
+                          <td>
+                            Rp{" "}
+                            {Number(item.nominal).toLocaleString(
+                              "id-ID"
+                            )}
+                          </td>
 
-                              <td className="fw-bold text-success">
-                                {selectedData.nominal}
-                              </td>
+                          <td>
+                            {new Date(item.tanggal).toLocaleDateString(
+                              "id-ID"
+                            )}
+                          </td>
 
-                              <td>
+                          <td>
+                            <span
+                              className={`badge ${
+                                item.status === "Lunas"
+                                  ? "bg-success"
+                                  : "bg-warning text-dark"
+                              }`}
+                            >
+                              {item.status}
+                            </span>
+                          </td>
 
-                                <span
-                                  className={`badge text-bg-${selectedData.badge}`}
-                                >
+                          <td>
+                            <button
+                              className="btn btn-warning btn-sm"
+                              data-bs-toggle="modal"
+                              data-bs-target="#editPembayaranModal"
+                              onClick={() => setSelectedData(item)}
+                            >
+                              <i className="bi bi-pencil" />
+                            </button>
 
-                                  {selectedData.status}
-
-                                </span>
-
-                              </td>
-
-                            </tr>
-
-                          </tbody>
+                            <button
+                              className="btn btn-danger btn-sm ms-2"
+                              data-bs-toggle="modal"
+                              data-bs-target="#deletePembayaranModal"
+                              onClick={() => setSelectedData(item)}
+                            >
+                              <i className="bi bi-trash" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
 
                         </table>
 
