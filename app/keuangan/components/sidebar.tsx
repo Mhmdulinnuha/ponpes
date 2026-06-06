@@ -34,6 +34,13 @@ export default function Sidebar() {
           <span className="nav-text">Dashboard</span>
         </Link>
 
+        <Link className="nav-link" href="/keuangan/jenis">
+          <span className="nav-icon">
+            <i className="bi bi-people" />
+          </span>
+          <span className="nav-text">Jenis Pembayaran</span>
+        </Link>
+
         
 
         <Link className="nav-link" href="/keuangan/pembayaran">
