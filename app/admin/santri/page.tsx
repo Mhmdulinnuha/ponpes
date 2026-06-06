@@ -4,6 +4,7 @@ import Image from "next/image"
 import { useEffect, useState } from "react"
 import TambahSantriModal from "./tambah"
 import EditSantriModal from "./edit"
+import DeleteSantriModal from "./delete"
 import Sidebar from "@/app/admin/components/sidebar"
 import Navbar from "@/app/admin/components/navbar"
 import Footer from "@/app/admin/components/footer"
@@ -11,6 +12,7 @@ import Footer from "@/app/admin/components/footer"
 
 
 export default function Santri() {
+  
   const [selectedData, setSelectedData] = useState<any>(null)
    const [santri, setSantri] = useState<any[]>([])
 const [loading, setLoading] = useState(true)
@@ -233,11 +235,14 @@ if (loading) {
                         <i className="bi bi-pencil" />
                       </button>
 
-                        <button className="btn btn-danger btn-sm ms-2">
-
-                          <i className="bi bi-trash" />
-
-                        </button>
+                        <button
+                        className="btn btn-danger btn-sm ms-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteSantriModal"
+                        onClick={() => setSelectedData(item)}
+                      >
+                        <i className="bi bi-trash" />
+                      </button>
 
                       </td>
 
@@ -258,6 +263,7 @@ if (loading) {
         </main>
         <TambahSantriModal onSuccess={getSantri} />
         <EditSantriModal onSuccess={getSantri} selectedData={selectedData}/>
+        <DeleteSantriModal onSuccess={getSantri} selectedData={selectedData} />
 
         <Footer />
 
