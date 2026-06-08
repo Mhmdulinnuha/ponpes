@@ -2,13 +2,13 @@
 
 
 
-export default function DeleteJenisModal({ selectedData, onSuccess }: { selectedData: any; onSuccess: () => void }) {
-  const hapusJenis = async () => {
+export default function DeletePembayaranModal({ selectedData, onSuccess }: { selectedData: any; onSuccess: () => void }) {
+  const hapusPembayaran = async () => {
     try {
       if (!selectedData?.id) return
 
     const res = await fetch(
-      `http://localhost:8080/jenis-pembayaran/${selectedData.id}`,
+      `http://localhost:8080/pembayaran/${selectedData.id}`,
       {
         method: "DELETE",
       }
@@ -35,7 +35,7 @@ export default function DeleteJenisModal({ selectedData, onSuccess }: { selected
 return (
 <div
   className="modal fade"
-  id="deleteJenisModal"
+  id="deletePembayaranModal"
   tabIndex={-1}
   aria-hidden="true"
 >
@@ -67,10 +67,10 @@ return (
         </h5>
 
         <p className="text-muted">
-          Data jenis pembayaran
+          Data pembayaran
           <strong>
             {" "}
-            {selectedData?.nama_jenis}
+            {selectedData?.nama_lengkap}
           </strong>
           {" "}akan dihapus permanen.
         </p>
@@ -98,7 +98,7 @@ return (
         <button
           type="button"
           className="btn btn-danger"
-          onClick={hapusJenis}
+          onClick={hapusPembayaran}
         >
           Ya, Hapus
         </button>

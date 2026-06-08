@@ -1,7 +1,9 @@
 "use client"
 import { useState, useEffect } from "react"
 import Image from "next/image"
-
+import TambahPembayaranModal from "./tambah"
+import EditPembayaranModal from "./edit"
+import DeletePembayaranModal from "./delete"
 import Sidebar from "@/app/keuangan/components/sidebar"
 import Navbar from "@/app/keuangan/components/navbar"
 import Footer from "@/app/keuangan/components/footer"
@@ -99,7 +101,10 @@ export default function Pembayaran() {
 
               </div>
 
-              <button className="btn btn-primary rounded-4 px-4 py-2 shadow-sm">
+              <button className="btn btn-primary"  data-bs-toggle="modal"
+                data-bs-target="#tambahPembayaranModal"
+                onClick={() => setSelectedData(null)}
+              >
 
                 <i className="bi bi-plus-lg me-2" />
 
@@ -239,6 +244,8 @@ export default function Pembayaran() {
                       <th>Santri</th>
                       <th>Jenis</th>
                       <th>Nominal</th>
+                      <th>Bayar</th>
+                      <th>Sisa</th>
                       <th>Tanggal</th>
                       <th>Status</th>
 
@@ -284,11 +291,18 @@ export default function Pembayaran() {
                   </td>
 
                   <td>
-                    Rp{" "}
-                    {Number(item.nominal).toLocaleString(
-                      "id-ID"
-                    )}
-                  </td>
+                  Rp {Number(item.nominal).toLocaleString("id-ID")}
+                </td>
+
+                <td>
+                  Rp {Number(item.bayar).toLocaleString("id-ID")}
+                </td>
+
+                <td>
+                  Rp {Number(item.nominal - item.bayar).toLocaleString("id-ID")}
+                </td>
+
+               
 
                   <td>
                     {new Date(item.tanggal).toLocaleDateString(
@@ -296,17 +310,17 @@ export default function Pembayaran() {
                     )}
                   </td>
 
-                  <td>
-                    <span
-                      className={`badge ${
-                        item.status === "Sudah Lunas"
-                          ? "bg-success"
-                          : "bg-danger"
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  </td>
+                   <td>
+                  <span
+                    className={`badge ${
+                      item.status === "Lunas"
+                        ? "bg-success"
+                        : "bg-warning text-dark"
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </td>
 
                   <td className="text-end">
                     <div className="d-flex justify-content-end gap-2">
@@ -320,11 +334,19 @@ export default function Pembayaran() {
                         <i className="bi bi-eye" />
                       </button>
 
-                      <button className="btn btn-primary btn-sm">
+                     <button
+                      className="btn btn-warning btn-sm "  data-bs-toggle="modal"
+                      data-bs-target="#editPembayaranModal" onClick={() => setSelectedData(item)}
+                      >
                         <i className="bi bi-pencil-square" />
                       </button>
 
-                      <button className="btn btn-danger btn-sm">
+                      <button
+                        className="btn btn-danger btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deletePembayaranModal"
+                        onClick={() => setSelectedData(item)}
+                      >
                         <i className="bi bi-trash" />
                       </button>
 
@@ -373,6 +395,12 @@ export default function Pembayaran() {
           </div>
 
         </main>
+
+        <TambahPembayaranModal onSuccess={getPembayaran} />
+        <EditPembayaranModal onSuccess={getPembayaran} selectedData={selectedData}/>
+        <DeletePembayaranModal onSuccess={getPembayaran} selectedData={selectedData}/>
+
+
 
         {/* FOOTER */}
 
