@@ -267,30 +267,7 @@ export default function EditPembayaranModal({
             </div>
                 
 
-            <div className="mb-3">
-                <label className="form-label">
-                Status
-                </label>
-
-                <select
-                className="form-select"
-                value={form.status}
-                onChange={(e) =>
-                    setForm({
-                    ...form,
-                    status: e.target.value,
-                    })
-                }
-                >
-                <option value="Belum Lunas">
-                    Belum Lunas
-                </option>
-
-                <option value="Lunas">
-                    Lunas
-                </option>
-                </select>
-            </div>
+            
 
           </div>
 

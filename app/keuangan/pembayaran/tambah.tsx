@@ -15,6 +15,7 @@ export default function TambahPembayaranModal({
     jenis_pembayaran_id: "",
     nominal: "",
     bayar: "",
+    metode_pembayaran: "",
     tanggal: "",
     })
 
@@ -24,6 +25,7 @@ export default function TambahPembayaranModal({
       !form.santri_id ||
       !form.jenis_pembayaran_id ||
       !form.bayar ||
+      !form.metode_pembayaran ||
       !form.tanggal
     ) {
       alert("Lengkapi semua data terlebih dahulu")
@@ -38,6 +40,10 @@ export default function TambahPembayaranModal({
       form.jenis_pembayaran_id
     )
     formData.append("bayar", form.bayar)
+        formData.append(
+      "metode_pembayaran",
+      form.metode_pembayaran
+    )
     formData.append("tanggal", form.tanggal)
 
     console.log("=== DATA DIKIRIM ===")
@@ -76,6 +82,7 @@ export default function TambahPembayaranModal({
       jenis_pembayaran_id: "",
       nominal: "",
       bayar: "",
+      metode_pembayaran: "",
       tanggal: "",
     })
   } catch (err) {
@@ -224,6 +231,36 @@ export default function TambahPembayaranModal({
     
   </div>
 
+  <div className="mb-3">
+  <label className="form-label">
+    Metode Pembayaran
+  </label>
+
+  <select
+  className="form-select"
+  value={form.metode_pembayaran}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      metode_pembayaran: e.target.value,
+    })
+  }
+>
+  <option value="">
+    Pilih Metode Pembayaran
+  </option>
+
+  <option value="Tunai">
+    Tunai
+  </option>
+
+  <option value="Transfer">
+    Transfer
+  </option>
+
+  
+</select>
+  </div>
   
   <div className="mb-3">
     <label className="form-label">

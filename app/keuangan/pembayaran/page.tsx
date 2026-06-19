@@ -246,6 +246,7 @@ export default function Pembayaran() {
                       <th>Jenis</th>
                       <th>Nominal</th>
                       <th>Bayar</th>
+                      <th>Metode</th>
                       <th>Sisa</th>
                       <th>Tanggal</th>
                       <th>Status</th>
@@ -267,21 +268,10 @@ export default function Pembayaran() {
 
                   <td>
                     <div className="d-flex align-items-center gap-3">
-
-                      <Image
-                        src="/images/avatar/avatar.jpg"
-                        alt={item.santri?.nama_lengkap || "Santri"}
-                        width={48}
-                        height={48}
-                        className="rounded-circle border"
-                      />
-
                       <div>
                         <h6 className="mb-0 fw-semibold">
                           {item.Santri?.nama_lengkap}
                         </h6>
-
-                       
                       </div>
 
                     </div>
@@ -299,6 +289,17 @@ export default function Pembayaran() {
                   Rp {Number(item.bayar).toLocaleString("id-ID")}
                 </td>
 
+                <td>
+                  <span
+                    className={`badge ${
+                      item.metode_pembayaran === "Tunai"
+                        ? "bg-success"
+                        : "bg-primary"
+                    }`}
+                  >
+                    {item.metode_pembayaran}
+                  </span>
+                </td>
                 <td>
                   Rp {Number(item.nominal - item.bayar).toLocaleString("id-ID")}
                 </td>

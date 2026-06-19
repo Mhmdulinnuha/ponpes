@@ -10,6 +10,7 @@ export default function DetailPembayaranModal({
   // Ekstraksi data secara aman dengan fallback jika properti undefined
   const santriNama = selectedData.Santri?.nama_lengkap || selectedData.santri?.nama_lengkap || "-";
   const jenisNama = selectedData.JenisPembayaran?.nama_jenis || "-";
+  const metodebayar = selectedData.metode_pembayaran || "-";
   const nominal = Number(selectedData.nominal || 0);
   const bayar = Number(selectedData.bayar || 0);
   const sisa = nominal - bayar;
@@ -96,11 +97,16 @@ export default function DetailPembayaranModal({
                     </div>
 
                     <div className="d-flex justify-content-between">
+                      <span className="text-muted">Metode Pembayaran</span>
+                      <span className="fw-semibold text-dark">{metodebayar}</span>
+                    </div>
+
+                    <div className="d-flex justify-content-between">
                       <span className="text-muted">Tanggal Transaksi</span>
                       <span className="fw-semibold text-dark">{tanggal}</span>
                     </div>
 
-                    <div className="d-flex justify-content-between">
+                    <div className="d-flex justify-content-between" >
                       <span className="text-muted">Total Tagihan</span>
                       <span className="fw-bold text-dark">
                         Rp {nominal.toLocaleString("id-ID")}
