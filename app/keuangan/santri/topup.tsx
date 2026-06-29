@@ -14,12 +14,7 @@ export default function TopupSaldoModal({ onSuccess }: any) {
 
   const isSantriSelected = !!santriID
 
-  // =========================
-  // AMBIL DATA DARI 2 TABLE
-  // =========================
-  const selectedSantri = santri.find(
-    (item: any) => Number(item.id) === Number(santriID)
-  )
+ 
 
  
 
@@ -59,6 +54,14 @@ export default function TopupSaldoModal({ onSuccess }: any) {
     setLimitBaru("")
     setKeterangan("")
   }, [santriID])
+
+  useEffect(() => {
+  if (!saldoSantri) return
+
+  setLimitBaru(
+    saldoSantri.limit_harian?.toString() ?? "0"
+  )
+}, [saldoSantri])
 
   // =========================
   // FETCH DATA
@@ -107,34 +110,7 @@ export default function TopupSaldoModal({ onSuccess }: any) {
 
 }, [santriID])
 
-  // =========================
-  // UPDATE LIMIT
-  // =========================
-  const handleUpdateLimit = async () => {
-    if (!santriData?.id) return alert("Pilih santri dulu")
-
-    try {
-      const res = await fetch(
-        `http://localhost:8080/saldo-santri/${santriData.id}/limit`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            limit_harian: Number(limitBaru),
-          }),
-        }
-      )
-
-      const result = await res.json()
-      if (!res.ok) throw new Error(result.message)
-
-      alert("Limit berhasil diubah")
-      onSuccess?.()
-
-    } catch (err: any) {
-      alert(err.message)
-    }
-  }
+ 
 
   const simpan = async () => {
 
@@ -143,8 +119,11 @@ export default function TopupSaldoModal({ onSuccess }: any) {
         return
     }
 
-    if (Number(nominalTopup) <= 0) {
-        alert("Nominal tidak valid")
+   if (
+    Number(nominalTopup) <= 0 &&
+    Number(limitBaru) <= 0
+    ){
+        alert("Isi nominal atau limit.")
         return
     }
 
@@ -188,52 +167,7 @@ export default function TopupSaldoModal({ onSuccess }: any) {
         setLoading(false)
     }
 }
-  // =========================
-  // TOPUP
-  // =========================
-  const handleTopup = async () => {
-    if (!santriID) return alert("Pilih santri dulu")
-    if (Number(nominalTopup) <= 0)
-      return alert("Nominal tidak valid")
-
-    try {
-      setLoading(true)
-
-      const res = await fetch(
-        "http://localhost:8080/saldo-santri/topup",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            santri_id: Number(santriID),
-            nominal: Number(nominalTopup),
-            keterangan,
-          }),
-        }
-      )
-
-      const result = await res.json()
-      if (!res.ok) throw new Error(result.message)
-
-      alert("Top up berhasil")
-
-      setSantriID("")
-      setNominalTopup("")
-      setKeterangan("")
-
-      onSuccess?.()
-
-      document
-        .getElementById("btnCloseTopupModal")
-        ?.click()
-
-    } catch (err: any) {
-      alert(err.message)
-    } finally {
-      setLoading(false)
-    }
-    
-  }
+  
   return (
     <div
       className="modal fade"

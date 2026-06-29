@@ -17,6 +17,20 @@ export default function SaldoSantri() {
   getSaldoSantri()
 }, [])
 
+const handleDetail = async (santriId: number) => {
+  try {
+    const res = await fetch(
+      `http://localhost:8080/saldo-santri/detail/${santriId}`
+    )
+
+    const result = await res.json()
+
+    setSelectedData(result.data)
+  } catch (err) {
+    console.error(err)
+  }
+}
+
 const getSaldoSantri = async () => {
   try {
     const res = await fetch(
@@ -268,7 +282,7 @@ if (loading) {
                 className="btn btn-light btn-sm"
                 data-bs-toggle="modal"
                 data-bs-target="#detailSantriModal"
-                onClick={() => setSelectedData(item)}
+                onClick={() => handleDetail(item.santri_id)}
               >
                 <i className="bi bi-eye" />
               </button>

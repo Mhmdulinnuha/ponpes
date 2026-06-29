@@ -1,12 +1,25 @@
 "use client"
 import Image from "next/image"
 
+
+
 export default function DetailTopupModal({
   selectedData,
 }: any) {
   if (!selectedData) return null
 
+  console.log("Selected Data:", selectedData)
+  console.log("Topup:", selectedData.topup)
+
+  const sisaLimit =
+  Number(selectedData?.limit_harian ?? 0) -
+  Number(selectedData?.terpakai_hari_ini ?? 0)
+  
   const riwayat = selectedData.topup || []
+  const totalTopup = riwayat.reduce(
+    (total: number, item: any) => total + Number(item.nominal),
+    0
+  )
 
   return (
     <div className="modal fade" id="detailSantriModal">
@@ -78,7 +91,7 @@ export default function DetailTopupModal({
             <div className="card p-3 shadow-sm">
               <small className="text-muted">Sisa Limit</small>
               <h5 className="text-success">
-                Rp {(selectedData?.limit_harian - selectedData?.terpakai_hari_ini)?.toLocaleString("id-ID")}
+                Rp {sisaLimit.toLocaleString("id-ID")}
               </h5>
             </div>
           </div>
@@ -93,12 +106,12 @@ export default function DetailTopupModal({
 
           <div className="d-flex justify-content-between">
             <span>Total Top Up</span>
-            <b>Rp 1.250.000</b>
+            <b>Rp {totalTopup.toLocaleString("id-ID")}</b>
           </div>
 
           <div className="d-flex justify-content-between">
             <span>Jumlah Transaksi</span>
-            <b>12x</b>
+            <b>{riwayat.length}x</b>
           </div>
         </div>
 
@@ -107,17 +120,34 @@ export default function DetailTopupModal({
         {/* RIWAYAT SINGKAT */}
         <h6>Riwayat Terakhir</h6>
 
-        <ul className="list-group">
-          <li className="list-group-item d-flex justify-content-between">
-            <span>Top Up</span>
-            <span>+100.000</span>
-          </li>
+       <ul className="list-group">
+        {riwayat.length > 0 ? (
+          riwayat.slice(0, 5).map((item: any) => (
+            <li
+              key={item.id}
+              className="list-group-item d-flex justify-content-between"
+            >
+              <div>
+                <div className="fw-semibold">
+                  Top Up
+                </div>
 
-          <li className="list-group-item d-flex justify-content-between">
-            <span>Top Up</span>
-            <span>+50.000</span>
+                <small className="text-muted">
+                  {item.keterangan}
+                </small>
+              </div>
+
+              <div className="text-success fw-bold">
+                +Rp {Number(item.nominal).toLocaleString("id-ID")}
+              </div>
+            </li>
+          ))
+        ) : (
+          <li className="list-group-item text-center text-muted">
+            Belum ada riwayat top up
           </li>
-        </ul>
+        )}
+      </ul>
 
       </div>
 
