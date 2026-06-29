@@ -5,7 +5,7 @@ import Sidebar from "@/app/keuangan/components/sidebar"
 import Navbar from "@/app/keuangan/components/navbar"
 import Footer from "@/app/keuangan/components/footer"
 import TopupSaldoModal from "./topup"
-import RiwayatTopupModal from "./detail"
+import DetailTopupModal from "./detail"
 
 
 export default function SaldoSantri() {
@@ -223,7 +223,7 @@ if (loading) {
         <th>Nama Santri</th>
         <th>Saldo Utama</th>
         <th>Limit Harian</th>
-        <th>Saldo Hari Ini</th>
+        <th>Terpakai Hari Ini</th>
         <th>Status</th>
         <th className="text-end">Aksi</th>
       </tr>
@@ -266,6 +266,9 @@ if (loading) {
             <div className="d-flex justify-content-end gap-2">
               <button
                 className="btn btn-light btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#detailSantriModal"
+                onClick={() => setSelectedData(item)}
               >
                 <i className="bi bi-eye" />
               </button>
@@ -299,7 +302,7 @@ if (loading) {
         </main>
 
          <TopupSaldoModal onSuccess={getSaldoSantri} saldoSantri={saldoSantri}/>
-         <RiwayatTopupModal selectedData={selectedData}/>
+         <DetailTopupModal selectedData={selectedData}/>
 
         <Footer />
 

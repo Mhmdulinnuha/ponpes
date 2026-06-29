@@ -47,6 +47,8 @@ export default function TopupSaldoModal({ onSuccess }: any) {
   const saldoSetelahTopup =
     saldoUtama + Number(nominalTopup || 0)
 
+  
+
   // =========================
   // RESET INPUT
   // =========================
@@ -77,17 +79,32 @@ export default function TopupSaldoModal({ onSuccess }: any) {
   }
 
   useEffect(() => {
-  if (!santriID) return
+
+  if (!santriID) {
+    setSaldoSantri(null)
+    return
+  }
 
   const fetchSaldo = async () => {
-    const res = await fetch(
-      `http://localhost:8080/saldo-santri/${santriID}`
-    )
-    const result = await res.json()
-    setSaldoSantri(result.data || null)
+
+    try {
+
+      const res = await fetch(
+        `http://localhost:8080/saldo-santri/detail/${santriID}`
+      )
+
+      const result = await res.json()
+
+      setSaldoSantri(result.data)
+
+    } catch(err) {
+      console.error(err)
+    }
+
   }
 
   fetchSaldo()
+
 }, [santriID])
 
   // =========================
@@ -119,6 +136,58 @@ export default function TopupSaldoModal({ onSuccess }: any) {
     }
   }
 
+  const simpan = async () => {
+
+    if (!santriID) {
+        alert("Pilih santri")
+        return
+    }
+
+    if (Number(nominalTopup) <= 0) {
+        alert("Nominal tidak valid")
+        return
+    }
+
+    setLoading(true)
+
+    try {
+
+        const res = await fetch(
+            "http://localhost:8080/saldo-santri/topup",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    santri_id: Number(santriID),
+                    nominal: Number(nominalTopup),
+                    limit_harian: Number(limitBaru),
+                    keterangan: keterangan,
+                }),
+            }
+        )
+
+        const result = await res.json()
+
+        if (!res.ok) {
+            throw new Error(result.message)
+        }
+
+        alert(result.message)
+
+        onSuccess?.()
+
+        document
+            .getElementById("btnCloseTopupModal")
+            ?.click()
+
+    } catch (err: any) {
+        alert(err.message)
+    } finally {
+        setLoading(false)
+    }
+}
   // =========================
   // TOPUP
   // =========================
@@ -163,6 +232,7 @@ export default function TopupSaldoModal({ onSuccess }: any) {
     } finally {
       setLoading(false)
     }
+    
   }
   return (
     <div
@@ -352,22 +422,11 @@ export default function TopupSaldoModal({ onSuccess }: any) {
             Batal
           </button>
 
-           <button
-            type="button"
-            className="btn btn-warning"
-            onClick={handleUpdateLimit}
-          >
-            Update Limit
-          </button>
+          
 
-          <button
-            type="button"
-            className="btn btn-success"
-            disabled={loading}
-            onClick={handleTopup}
-          >
-            {loading ? "Menyimpan..." : "Simpan Top Up"}
-          </button>
+        <button onClick={simpan}>
+            Simpan
+        </button>
 
         </div>
 
