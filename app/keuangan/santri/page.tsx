@@ -58,6 +58,24 @@ if (loading) {
     </div>
   )
 }
+const handleToggleStatus = async (id: number) => {
+  try {
+    const res = await fetch(
+      `http://localhost:8080/saldo-santri/${id}/toggle-status`,
+      {
+        method: "PUT",
+      }
+    )
+
+    const result = await res.json()
+
+    alert(result.message)
+
+    getSaldoSantri()
+  } catch (err) {
+    console.error(err)
+  }
+}
   return (
     <div className="admin-shell">
 
@@ -287,19 +305,15 @@ if (loading) {
                 <i className="bi bi-eye" />
               </button>
 
-            <button
-              className="btn btn-info btn-sm"
-              data-bs-toggle="modal"
-              data-bs-target="#riwayatTopupModal"
-              onClick={() => setSelectedData(item)}
-            >
-              <i className="bi bi-clock-history" />
-            </button>
-
              <button
               className="btn btn-secondary btn-sm"
+              onClick={() => handleToggleStatus(item.santri_id)}
             >
-              <i className="bi bi-lock" />
+              <i
+                className={`bi ${
+                  item.status === "Aktif" ? "bi-lock" : "bi-unlock"
+                }`}
+              />
             </button>
             </div>
           </td>

@@ -1,43 +1,46 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 
 import Sidebar from "@/app/keuangan/components/sidebar"
 import Navbar from "@/app/keuangan/components/navbar"
 import Footer from "@/app/keuangan/components/footer"
 
-const laporan = [
-  {
-    id: "TRX-001",
-    nama: "Ahmad Fauzan",
-    jenis: "Top Up",
-    nominal: 50000,
-    tanggal: "30 Mei 2026",
-    status: "Berhasil",
-    badge: "success",
-  },
-  {
-    id: "TRX-002",
-    nama: "Muhammad Rizki",
-    jenis: "Koperasi",
-    nominal: 10000,
-    tanggal: "30 Mei 2026",
-    status: "Berhasil",
-    badge: "primary",
-  },
-  {
-    id: "TRX-003",
-    nama: "Abdul Rahman",
-    jenis: "Laundry",
-    nominal: 5000,
-    tanggal: "30 Mei 2026",
-    status: "Berhasil",
-    badge: "warning",
-  },
-]
+
+
+
+
+
 
 export default function Pembayaran() {
-    const [selectedData, setSelectedData] = useState<any>(null)
+    const [laporan, setLaporan] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedData, setSelectedData] = useState<any>(null)
+
+  useEffect(() => {
+    getLaporan()
+  }, [])
+
+  const getLaporan = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/laporan")
+      const result = await res.json()
+
+      console.log(result); 
+
+      setLaporan(result.data)
+
+    } catch (err) {
+      console.log(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
   return (
     <div className="admin-shell">
 
@@ -311,22 +314,15 @@ export default function Pembayaran() {
 
                           <div className="d-flex align-items-center gap-3">
 
-                            <Image
-                              src="/images/avatar/avatar.jpg"
-                              alt={item.nama}
-                              width={48}
-                              height={48}
-                              className="rounded-circle border"
-                            />
-
+                            
                             <div>
 
                               <h6 className="mb-0 fw-semibold">
-                                {item.nama}
+                                {item.santri?.nama_lengkap ?? "-"}
                               </h6>
 
                               <small className="text-muted">
-                                {item.email}
+                                {item.santri?.email ?? "-"}
                               </small>
 
                             </div>
@@ -338,37 +334,33 @@ export default function Pembayaran() {
                         {/* JENIS */}
 
                         <td className="text-muted">
-                          {item.jenis}
+                          {item.jenis_pembayaran?.nama_jenis}
                         </td>
 
                         {/* NOMINAL */}
 
                         <td>
-
-                          <span className="fw-semibold text-success">
-                            {item.nominal}
-                          </span>
-
+                          Rp {Number(item.nominal).toLocaleString("id-ID")}
                         </td>
 
                         {/* TANGGAL */}
 
                         <td className="text-muted">
-                          {item.tanggal}
+                          {new Date(item.tanggal).toLocaleDateString("id-ID")}
                         </td>
 
                         {/* STATUS */}
 
                         <td>
-
-                          <span
-                            className={`badge rounded-pill text-bg-${item.badge}`}
-                          >
-
-                            {item.status}
-
-                          </span>
-
+                         <span
+                          className={`badge ${
+                            item.status === "Lunas"
+                              ? "bg-success"
+                              : "bg-danger"
+                          }`}
+                        >
+                          {item.status}
+                        </span>
                         </td>
 
                         {/* AKSI */}
