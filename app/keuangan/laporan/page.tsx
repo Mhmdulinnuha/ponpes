@@ -5,10 +5,17 @@ import Image from "next/image"
 import Sidebar from "@/app/keuangan/components/sidebar"
 import Navbar from "@/app/keuangan/components/navbar"
 import Footer from "@/app/keuangan/components/footer"
+import DetailPembayaranModal from "../laporan/detail"
+import DetailLaporanModal from "../laporan/detail"
 
 
 
-
+  interface Statistik {
+    total_topup: number;
+    total_pembayaran: number;
+    saldo: number;
+    jumlah_transaksi: number;
+}
 
 
 
@@ -17,9 +24,39 @@ export default function Pembayaran() {
   const [loading, setLoading] = useState(true)
   const [selectedData, setSelectedData] = useState<any>(null)
 
-  useEffect(() => {
-    getLaporan()
-  }, [])
+
+  const [summary, setSummary] = useState({
+    total_topup: 0,
+    total_pembayaran: 0,
+    saldo_saat_ini: 0,
+    jumlah_transaksi: 0,
+});
+
+  
+  const [statistik, setStatistik] = useState({
+    total_topup: 0,
+    total_pembayaran: 0,
+    saldo: 0,
+    jumlah_transaksi: 0,
+});
+
+useEffect(() => {
+    getLaporan();
+    
+}, []);
+
+
+
+  const getstatistik = async (id: number) => {
+    try {
+      const res = await fetch(`http://localhost:8080/laporan/statistik/${id}`)
+      const result = await res.json()
+
+      setStatistik(result.data)
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   const getLaporan = async () => {
     try {
@@ -28,7 +65,12 @@ export default function Pembayaran() {
 
       console.log(result); 
 
-      setLaporan(result.data)
+      setLaporan(result.data || []);
+      setSummary(result.summary);
+
+      if (result.summary) {
+    setSummary(result.summary);
+   }
 
     } catch (err) {
       console.log(err)
@@ -37,9 +79,12 @@ export default function Pembayaran() {
     }
   }
 
+  
+
   if (loading) {
     return <div>Loading...</div>
   }
+  
 
   return (
     <div className="admin-shell">
@@ -97,13 +142,7 @@ export default function Pembayaran() {
 
               </div>
 
-              <button className="btn btn-primary rounded-4 px-4 py-2 shadow-sm">
-
-                <i className="bi bi-plus-lg me-2" />
-
-                Tambah Pembayaran
-
-              </button>
+              
 
             </div>
 
@@ -196,9 +235,9 @@ export default function Pembayaran() {
   <div className="col-md-3">
     <div className="panel">
       <div className="panel-body text-center">
-        <h6 className="text-muted">Total Pemasukan</h6>
+        <h6 className="text-muted">Total Topup</h6>
         <h4 className="fw-bold text-success">
-          Rp 12.500.000
+          Rp {Number(summary.total_topup).toLocaleString("id-ID")}
         </h4>
       </div>
     </div>
@@ -207,9 +246,9 @@ export default function Pembayaran() {
   <div className="col-md-3">
     <div className="panel">
       <div className="panel-body text-center">
-        <h6 className="text-muted">Total Pengeluaran</h6>
+        <h6 className="text-muted">Total Pembayaran</h6>
         <h4 className="fw-bold text-danger">
-          Rp 8.300.000
+          Rp {Number(summary.total_pembayaran).toLocaleString("id-ID")}
         </h4>
       </div>
     </div>
@@ -218,9 +257,9 @@ export default function Pembayaran() {
   <div className="col-md-3">
     <div className="panel">
       <div className="panel-body text-center">
-        <h6 className="text-muted">Saldo Saat Ini</h6>
+        <h6 className="text-muted">Total Saldo Santri</h6>
         <h4 className="fw-bold text-primary">
-          Rp 4.200.000
+          Rp {Number(summary.saldo_saat_ini).toLocaleString("id-ID")}
         </h4>
       </div>
     </div>
@@ -231,7 +270,7 @@ export default function Pembayaran() {
       <div className="panel-body text-center">
         <h6 className="text-muted">Jumlah Transaksi</h6>
         <h4 className="fw-bold">
-          356
+          {summary.jumlah_transaksi}
         </h4>
       </div>
     </div>
@@ -373,24 +412,18 @@ export default function Pembayaran() {
                               className="btn btn-light btn-sm action-btn rounded-3"
                               data-bs-toggle="modal"
                               data-bs-target="#detailPembayaranModal"
-                              onClick={() => setSelectedData(item)}
+                            onClick={() => {
+                                setSelectedData(item);
+                                getstatistik(item.santri_id);
+                            }}
+                             
                             >
 
                               <i className="bi bi-eye" />
 
                             </button>
 
-                            <button className="btn btn-primary btn-sm action-btn rounded-3">
-
-                              <i className="bi bi-pencil-square" />
-
-                            </button>
-
-                            <button className="btn btn-danger btn-sm action-btn rounded-3">
-
-                              <i className="bi bi-trash" />
-
-                            </button>
+                            
 
                           </div>
 
@@ -448,315 +481,7 @@ export default function Pembayaran() {
 
       </div>
       {/* MODAL DETAIL PEMBAYARAN */}
-
-      <div
-        className="modal fade"
-        id="detailPembayaranModal"
-        tabIndex={-1}
-        aria-hidden="true"
-      >
-
-        <div className="modal-dialog modal-xl modal-dialog-centered">
-
-          <div className="modal-content border-0 rounded-4 overflow-hidden">
-
-            {/* MODAL HEADER */}
-
-            <div className="modal-header bg-primary text-white border-0">
-
-              <h5 className="modal-title fw-semibold">
-              <i className="bi bi-bar-chart-line me-2" />
-              Detail Laporan Keuangan
-            </h5>
-
-              <button
-                type="button"
-                className="btn-close btn-close-white"
-                data-bs-dismiss="modal"
-              />
-
-            </div>
-
-            {/* MODAL BODY */}
-
-            <div className="modal-body p-4">
-
-              {selectedData && (
-
-                <div className="d-flex flex-column gap-4">
-
-                  {/* PROFILE SANTRI */}
-
-                  <div className="card border-0 shadow-sm rounded-4">
-  <div className="card-body p-4">
-
-   <h5 className="fw-bold mb-4">
-    <i className="bi bi-file-earmark-bar-graph me-2 text-primary" />
-    Ringkasan Laporan
-  </h5>
-
-    <div className="row g-4">
-
-      <div className="col-md-6">
-
-        <div className="bg-light rounded-4 p-3">
-
-          <small className="text-muted">
-            Nama Santri
-          </small>
-
-          <h6 className="fw-bold mb-0">
-            {selectedData.nama}
-          </h6>
-
-        </div>
-
-      </div>
-
-      <div className="col-md-6">
-
-        <div className="bg-light rounded-4 p-3">
-
-          <small className="text-muted">
-            Jenis Transaksi
-          </small>
-
-          <h6 className="fw-bold mb-0">
-            {selectedData.jenis}
-          </h6>
-
-        </div>
-
-      </div>
-
-      <div className="col-md-6">
-
-        <div className="bg-light rounded-4 p-3">
-
-          <small className="text-muted">
-            Nominal
-          </small>
-
-          <h5 className="fw-bold text-success mb-0">
-            Rp {selectedData.nominal.toLocaleString("id-ID")}
-          </h5>
-
-        </div>
-
-      </div>
-
-      <div className="col-md-6">
-
-        <div className="bg-light rounded-4 p-3">
-
-          <small className="text-muted">
-            Tanggal
-          </small>
-
-          <h6 className="fw-bold mb-0">
-            {selectedData.tanggal}
-          </h6>
-
-        </div>
-
-      </div>
-
-      <div className="col-12">
-
-        <div className="bg-light rounded-4 p-3">
-
-          <small className="text-muted">
-            Status
-          </small>
-
-          <div className="mt-2">
-
-            <span
-              className={`badge text-bg-${selectedData.badge}`}
-            >
-              {selectedData.status}
-            </span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-</div>
-
-<div className="d-flex gap-2 mt-3">
-
-  <button className="btn btn-success flex-fill">
-    <i className="bi bi-printer me-2" />
-    Cetak Laporan
-  </button>
-
-  <button
-    className="btn btn-secondary flex-fill"
-    data-bs-dismiss="modal"
-  >
-    Tutup
-  </button>
-
-</div>
-
-                  {/* RIWAYAT PEMBAYARAN */}
-
-                  <div className="card border-0 shadow-sm rounded-4">
-
-                    <div className="card-body p-4">
-
-                      <h5 className="fw-bold mb-4">
-                      <i className="bi bi-clock-history me-2 text-success" />
-                      Riwayat Transaksi
-                    </h5>
-
-                      <div className="table-responsive">
-
-                        <table className="table align-middle">
-
-                          <thead>
-  <tr>
-    <th>ID Transaksi</th>
-    <th>Jenis</th>
-    <th>Tanggal</th>
-    <th>Nominal</th>
-    <th>Status</th>
-  </tr>
-</thead>
-
-                          <tbody>
-
-                            <tr>
-
-                              <td>
-                                {selectedData.jenis}
-                              </td>
-
-                              <td>
-                                {selectedData.tanggal}
-                              </td>
-
-                              <td className="fw-bold text-success">
-                                {selectedData.nominal}
-                              </td>
-
-                              <td>
-
-                                <span
-                                  className={`badge text-bg-${selectedData.badge}`}
-                                >
-
-                                  {selectedData.status}
-
-                                </span>
-
-                              </td>
-
-                            </tr>
-
-                          </tbody>
-
-                        </table>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                  <div className="card border-0 shadow-sm rounded-4">
-  <div className="card-body p-4">
-
-    <h5 className="fw-bold mb-4">
-      <i className="bi bi-pie-chart me-2 text-warning" />
-      Statistik Keuangan
-    </h5>
-
-    <div className="row g-3">
-
-      <div className="col-md-4">
-        <div className="bg-light rounded-4 p-3 text-center">
-          <small className="text-muted">
-            Total Top Up
-          </small>
-          <h5 className="fw-bold text-success mb-0">
-            Rp 1.500.000
-          </h5>
-        </div>
-      </div>
-
-      <div className="col-md-4">
-        <div className="bg-light rounded-4 p-3 text-center">
-          <small className="text-muted">
-            Total Pengeluaran
-          </small>
-          <h5 className="fw-bold text-danger mb-0">
-            Rp 750.000
-          </h5>
-        </div>
-      </div>
-
-      <div className="col-md-4">
-        <div className="bg-light rounded-4 p-3 text-center">
-          <small className="text-muted">
-            Saldo Akhir
-          </small>
-          <h5 className="fw-bold text-primary mb-0">
-            Rp 750.000
-          </h5>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-</div>
- 
-
-                 
-
-                  <div className="d-flex gap-2">
-
-  <button className="btn btn-success flex-fill">
-    <i className="bi bi-printer me-2" />
-    Cetak Laporan
-  </button>
-
-  <button className="btn btn-info flex-fill text-white">
-    <i className="bi bi-file-earmark-excel me-2" />
-    Export Excel
-  </button>
-
-  <button
-    className="btn btn-secondary flex-fill"
-    data-bs-dismiss="modal"
-  >
-    Tutup
-  </button>
-
-</div>
-
-                </div>
-
-              )}
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      
-
+    <DetailLaporanModal selectedData={selectedData}statistik={statistik}/>
     </div>
   )
 }
-

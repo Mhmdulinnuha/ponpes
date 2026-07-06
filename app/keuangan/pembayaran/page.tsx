@@ -270,7 +270,7 @@ export default function Pembayaran() {
                     <div className="d-flex align-items-center gap-3">
                       <div>
                         <h6 className="mb-0 fw-semibold">
-                          {item.Santri?.nama_lengkap}
+                          {item.santri?.nama_lengkap}
                         </h6>
                       </div>
 
@@ -278,7 +278,7 @@ export default function Pembayaran() {
                   </td>
 
                   <td>
-                    {item.JenisPembayaran?.nama_jenis}
+                    {item.jenis_pembayaran?.nama_jenis}
                   </td>
 
                   <td>
